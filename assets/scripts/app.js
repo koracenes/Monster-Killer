@@ -13,12 +13,25 @@ const LOG_EVENT_MONSTER_STRONG_ATTACK = "MONSTER_STRONG_ATTACK";
 const LOG_EVENT_PLAYER_HEAL = "PLAYER_HEAL";
 const LOG_EVENT_GAME_OVER = "GAME_OVER";
 
-const enteredValue = prompt("Maximum life for you and the monster.", "100");
-
-let chosenMaxLife = parseInt(enteredValue);
 let battleLog = [];
+let lastLoggedEntery;
 
-if (isNaN(chosenMaxLife) || chosenMaxLife <= 0) {
+function getMaxLifeVAlues() {
+  const enteredValue = prompt("Maximum life for you and the monster.", "100");
+
+  const parsedValue = parseInt(enteredValue);
+  if (isNaN(parsedValue) || parsedValue <= 0) {
+    throw { message: "invalid user input, not a number" };
+  }
+  return parsedValue;
+}
+
+let chosenMaxLife;
+
+try {
+  chosenMaxLife = getMaxLifeVAlues();
+} catch (error) {
+  console.log(error);
   chosenMaxLife = 100;
 }
 
@@ -240,9 +253,13 @@ function printLogHandler() {
   //   console.log(battleLog);
   let i = 0;
   for (const logEntery of battleLog) {
-    console.log(`#${i}`);
-    for (const key in logEntery) {
-      console.log(`${key}=> ${logEntery[key]}`);
+    if ((!lastLoggedEntery && lastLoggedEntery !== 0) || lastLoggedEntery < i) {
+      console.log(`#${i}`);
+      for (const key in logEntery) {
+        console.log(`${key}=> ${logEntery[key]}`);
+      }
+      lastLoggedEntery = i;
+      break;
     }
     i++;
   }
